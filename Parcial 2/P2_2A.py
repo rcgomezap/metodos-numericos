@@ -63,29 +63,35 @@ x3[0,:]=xi
 for i in range(0,n-1,1):
     v0=vi[0]
     t[i+1],x1[i+1,:]=rk4(t[i],x1[i,:],h,fode)
+    
     v0=vi[1]
     t[i+1],x2[i+1,:]=rk4(t[i],x2[i,:],h,fode)
+    
     v0=vi[2]
     t[i+1],x3[i+1,:]=rk4(t[i],x3[i,:],h,fode)
     
-##Determinacion de la estabilidad del sistema
+##Determinacion de la estabilidad de los sistemas
+## Mediante calculo de promedios de tiempos finales
+
     
 
 plt.figure(1)
 plt.figure(figsize=(15,5))
 
 plt.subplot(2,2,1)
-plt.plot(t,x1[:,0],color='r',label='v0=0.5')
+plt.title('v0 = 0.5 m/s- Sistema inestable')
+plt.plot(t,x1[:,0],color='r')
 plt.legend()
 plt.grid()
 
 plt.subplot(2,2,3)
-plt.plot(t,x2[:,0],color='r',label='v0=1.0')
+plt.title('v0 = 1.0 m/s - Sistema inestable')
+plt.plot(t,x2[:,0],color='r')
 plt.legend()
 plt.grid()
 
-plt.subplot(2,2,2)
-plt.title('0.5')
-plt.plot(t,x3[:,0],color='r',label='v0=1.5')
+plt.subplot(1,2,2)
+plt.title('v0 = 1.5 m/s - Sistema Estable')
+plt.plot(t,x3[:,0],color='g')
 plt.legend()
 plt.grid()
