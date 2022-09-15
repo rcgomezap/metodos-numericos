@@ -14,17 +14,18 @@ c=0.1
 m=1
 g=9.8
 u=0.6
-k=1600
-n=0.1
+
 N=m*g
 
 
 def fode(t,x):
+    k=1600
+    n=0.1
     v=0.5-x[1]
     F=u*N*(1-b*v+c*(v**3))
     F1=k*x[0]
     F2=n*x[1]
-    dxdt=np.array([x[1],m*(F-F1-F2)])
+    dxdt=np.array([x[1],(F-F1-F2)*m])
     return dxdt
 
 
@@ -39,10 +40,10 @@ def rk4(xi,Yi,h,f):
 
 #datos iniciales
 ti=0
-tf=20
+tf=10
 vi=np.array([0.5,1,1.5])
 xi=np.array([0,0.5])
-n=21# numero de datos a analizar
+n=1000# numero de datos a analizar
 h=(tf-ti)/(n-1) #paso
 
 
