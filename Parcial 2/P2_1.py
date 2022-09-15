@@ -61,6 +61,7 @@ while (er>tol)and(i<=maxiter):
 
 costo_total=costo(xnew)
 
+
 print(f'Numero de iteraciones: {i}')
 print('+++++++++++++++++++++++++++++++')
 print('Solucion:')
