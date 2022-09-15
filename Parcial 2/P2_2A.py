@@ -8,19 +8,16 @@ Created on Thu Sep 15 12:19:57 2022
 import numpy as np
 import matplotlib.pyplot as plt
 
-#Datos iniciales
-b=0.3
-c=0.1
-m=1
-g=9.8
-u=0.6
-
-N=m*g
-
 
 def fode(t,x):
+    b=0.3
+    c=0.1
+    m=1
+    g=9.8
+    u=0.6
     k=1600
     n=0.1
+    N=m*g
     v=v0-x[1]
     F=u*N*(1-b*v+c*(v**3))
     F1=k*x[0]
@@ -43,6 +40,7 @@ ti=0
 tf=10
 vi=np.array([0.5,1,1.5])
 xi=np.array([0,0.5])
+
 n=2000# numero de datos a analizar
 h=(tf-ti)/(n-1) #paso
 
@@ -54,12 +52,6 @@ x3=np.zeros(shape=(n,2))
 
 
 
-#condicion inicial
-
-x1[0,:]=xi
-x2[0,:]=xi 
-x3[0,:]=xi 
-
 for i in range(0,n-1,1):
     v0=vi[0]
     t[i+1],x1[i+1,:]=rk4(t[i],x1[i,:],h,fode)
@@ -69,22 +61,18 @@ for i in range(0,n-1,1):
     
     v0=vi[2]
     t[i+1],x3[i+1,:]=rk4(t[i],x3[i,:],h,fode)
-    
-##Determinacion de la estabilidad de los sistemas
-## Mediante calculo de promedios de tiempos finales
-
-    
+   
 
 plt.figure(1)
-plt.figure(figsize=(15,5))
+plt.figure(figsize=(15,8))
 
 plt.subplot(2,2,1)
-plt.title('v0 = 0.5 m/s- Sistema inestable')
+plt.title('v0 = 0.5 m/s- Sistema Inestable')
 plt.plot(t,x1[:,0],color='r')
 plt.grid()
 
 plt.subplot(2,2,3)
-plt.title('v0 = 1.0 m/s - Sistema inestable')
+plt.title('v0 = 1.0 m/s - Sistema Inestable')
 plt.plot(t,x2[:,0],color='r')
 plt.grid()
 
