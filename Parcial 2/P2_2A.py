@@ -21,7 +21,7 @@ N=m*g
 def fode(t,x):
     k=1600
     n=0.1
-    v=0.5-x[1]
+    v=v0-x[1]
     F=u*N*(1-b*v+c*(v**3))
     F1=k*x[0]
     F2=n*x[1]
@@ -43,7 +43,7 @@ ti=0
 tf=10
 vi=np.array([0.5,1,1.5])
 xi=np.array([0,0.5])
-n=1000# numero de datos a analizar
+n=2000# numero de datos a analizar
 h=(tf-ti)/(n-1) #paso
 
 
@@ -61,6 +61,31 @@ x2[0,:]=xi
 x3[0,:]=xi 
 
 for i in range(0,n-1,1):
+    v0=vi[0]
     t[i+1],x1[i+1,:]=rk4(t[i],x1[i,:],h,fode)
+    v0=vi[1]
+    t[i+1],x2[i+1,:]=rk4(t[i],x2[i,:],h,fode)
+    v0=vi[2]
+    t[i+1],x3[i+1,:]=rk4(t[i],x3[i,:],h,fode)
     
-plt.plot(t,x1[:,0])
+##Determinacion de la estabilidad del sistema
+    
+
+plt.figure(1)
+plt.figure(figsize=(15,5))
+
+plt.subplot(2,2,1)
+plt.plot(t,x1[:,0],color='r',label='v0=0.5')
+plt.legend()
+plt.grid()
+
+plt.subplot(2,2,3)
+plt.plot(t,x2[:,0],color='r',label='v0=1.0')
+plt.legend()
+plt.grid()
+
+plt.subplot(2,2,2)
+plt.title('0.5')
+plt.plot(t,x3[:,0],color='r',label='v0=1.5')
+plt.legend()
+plt.grid()
