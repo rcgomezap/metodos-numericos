@@ -45,7 +45,7 @@ i=0
 
 
 print('Metodo de Newton Multivariable')
-print('++++++++++++++++++++++++++++++')
+print('+++++++++++++++++++++++++++++++')
 
 while (er>tol)and(i<=maxiter):
     j=jacobiano_newton(F,x0)
@@ -62,9 +62,9 @@ while (er>tol)and(i<=maxiter):
 costo_total=costo(xnew)
 
 print(f'Numero de iteraciones: {i}')
-print('++++++++++++++++++++++++++++++')
+print('+++++++++++++++++++++++++++++++')
 print('Solucion:')
-print('++++++++++++++++++++++++++++++')
+print('+++++++++++++++++++++++++++++++')
 print(f'La potencia óptima del mezclador es: {xnew[0]} KW')
 print(f'La capacidad óptima del mezclador es: {xnew[1]} kg/lote')
 print(f'El costo obtenido con las variables optimizadas es: {costo_total} $/año')
