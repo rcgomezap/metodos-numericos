@@ -39,7 +39,7 @@ def rk4(xi,Yi,h,f):
 ti=0
 tf=10
 vi=np.array([0.5,1,1.5])
-xi=np.array([0,0.5])
+# xi=np.array([0,0.5])
 
 n=2000# numero de datos a analizar
 h=(tf-ti)/(n-1) #paso
