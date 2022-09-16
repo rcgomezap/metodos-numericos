@@ -41,6 +41,6 @@ while error>=tolerancia:
     x1=x2
     
 
-print('La solución del sistema de ecuaciones es: ')
+print(f'Con {iter} interaciones, la solución del sistema de ecuaciones es: ')
 print(x2)
 
