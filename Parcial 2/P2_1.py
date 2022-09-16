@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Sep 14 16:48:50 2022
+Created on Thu Sep 15 12:19:57 2022
 
-@author: Roberto Gomez y Camilo Angarita
+@authors:   Roberto Carlos Gomez Araque_ID: 000423542
+            Juan Camilo Fernandez Angarita_ID: 000424705
 """
 
 import numpy as np
