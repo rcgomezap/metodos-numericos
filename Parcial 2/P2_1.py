@@ -17,7 +17,7 @@ def F(x):
     y[1]=-(1.591e9/(p*s*np.sqrt(s)))+4750/np.sqrt(s)
     return y
 
-def jacobiano_newton(f,x):
+def jacobiano_newton(x):
     n=np.size(x)
     j=np.zeros([n,n],float)
     p=x[0]
@@ -48,7 +48,7 @@ print('Metodo de Newton Multivariable')
 print('+++++++++++++++++++++++++++++++')
 
 while (er>tol)and(i<=maxiter):
-    j=jacobiano_newton(F,x0)
+    j=jacobiano_newton(x0)
     f=F(x0)
     dx=np.linalg.solve(j,-f)
     xnew=x0+dx

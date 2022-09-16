@@ -2,8 +2,8 @@
 """
 Created on Thu Sep 15 12:19:57 2022
 
-@authors:   Roberto Carlos Gomez Araque: 000423542
-            Juan Camilo Fernandez Angarita: 000424705
+@authors:   Roberto Carlos Gomez Araque_ID: 000423542
+            Juan Camilo Fernandez Angarita_ID: 000424705
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -67,7 +67,7 @@ plt.figure(1)
 plt.figure(figsize=(15,8))
 
 plt.subplot(2,2,1)
-plt.title('v0 = 0.5 m/s- Sistema Inestable')
+plt.title('v0 = 0.5 m/s - Sistema Inestable')
 plt.plot(t,x1[:,0],color='r')
 plt.grid()
 
