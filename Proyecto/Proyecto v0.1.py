@@ -23,8 +23,8 @@ def T(r):
 
     return f
 
-def T1(x,y):
-    r=np.sqrt(x**2+y**2)
+def T1(x,y,z):
+    r=np.sqrt(x**2+y**2+z**2)
     Tx=T(r)
     return Tx
 
@@ -35,7 +35,7 @@ def Tt(r,ti):
     f=f3(r,ti)
     return f
 
-rx=np.linspace(5e-9,30e-9,100)
+rx=np.linspace(-30e-9,30e-9,100)
 ry=rx
 rz=rx
 tiempo=np.linspace(1,20,100)
@@ -46,9 +46,11 @@ Ttiempo=np.zeros(100)
 
 plt.figure(1)
 X, Y = np.meshgrid(rx, ry)
-Z=T1(X,Y)
+Z=T1(X,Y,5e-9)
 plt.pcolor(X, Y, Z)
 plt.colorbar()
+plt.xlabel('Eje x (m)')
+plt.ylabel('Eje y (m)')
 plt.show()
 
 for i in range (0,100):
