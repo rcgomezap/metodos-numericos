@@ -35,7 +35,7 @@ def Tt(r,ti):
     f=f3(r,ti)
     return f
 
-rx=np.linspace(5e-9,2e-9,100)
+rx=np.linspace(5e-9,30e-9,100)
 ry=rx
 rz=rx
 tiempo=np.linspace(1,20,100)
@@ -52,6 +52,9 @@ plt.colorbar()
 plt.show()
 
 for i in range (0,100):
-    Ttiempo[i]=Tt(5e-9,tiempo[i])
+    Ttiempo[i]=Tt(1e-9,tiempo[i])
     
+plt.figure(2)
 plt.plot(tiempo,Ttiempo)
+plt.xlabel('Tiempo (s)')
+plt.ylabel('Cambio en la temperatura (°C)')
