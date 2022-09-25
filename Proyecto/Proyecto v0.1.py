@@ -38,7 +38,7 @@ def Tt(r,ti):
 rx=np.linspace(-30e-9,30e-9,100)
 ry=rx
 rz=rx
-tiempo=np.linspace(1,20,100)
+tiempo=np.linspace(1e-3,0.01,100)
 dim=(100,100)
 Z=np.zeros(dim)
 y=np.zeros(100)
