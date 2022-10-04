@@ -66,9 +66,18 @@ T[2,:]=u[10:15]
 T[3,:]=u[5:10]
 T[4,:]=u[0:5]
 
+plt.figure(1)
 X=np.arange(dim)
 Y=np.arange(dim)
 coordX,coordY = np.meshgrid(X,Y)
 T[:]=T[::-1,:]
 plt.pcolormesh(coordX,coordY,T,cmap="plasma", shading=("gouraud"))
 plt.colorbar()
+
+plt.figure(2)
+CS=plt.contour(coordX,coordY,T,cmap="plasma", shading=("gouraud"))
+
+plt.figure(3)
+fig=plt.figure()
+ax=fig.gca(projection="3d")
+surf=ax.plot_surface(coordX,coordY,T,cmap="plasma")
