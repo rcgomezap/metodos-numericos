@@ -13,11 +13,11 @@ import matplotlib.pyplot as plt
 
 
 #condiciones iniciales
-L=10e-1 #Largo malla
-A=10e-1 #Ancho malla
-H=10e-1 #Alto malla
+L=5e-1 #Largo malla
+A=5e-1 #Ancho malla
+H=5e-1 #Alto malla
 Tcorp=0
-pnir=1500.0
+pnir=1.5
 K=0.19
 rho=1000
 cp=3900
@@ -32,11 +32,11 @@ D=1/(3*(usp+ua))
 
 
 #parametros de la malla y tiempo
-n=10 #numero nodos
+n=8 #numero nodos
 dz=H/(n-1)
 dx=L/(n-1)
 dy=A/(n-1)
-dt=1e-5
+dt=300
 niter=1000
 
 solution=np.zeros(shape=(n,n,n,niter))
@@ -96,6 +96,6 @@ for i in range(0,niter,niter//10):
     plt.colorbar()
 
 plt.figure(n+1)
-plt.plot(nodo,solution[:,n//2,n//2,n-1])
+plt.plot(nodo,solution[:,n//3,n//5,niter-1])
 plt.figure(n+2)
-plt.plot(tiempo,solution[n//2,n//2,n//2,:])
+plt.plot(tiempo,solution[n//3,n//3,n//5,:])
