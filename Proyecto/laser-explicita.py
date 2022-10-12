@@ -13,14 +13,22 @@ import matplotlib.pyplot as plt
 
 
 #condiciones iniciales
-L=0.5 #Largo cilindro
-A=0.5 #Ancho cilindro
-H=0.5 #Alto cilindro
-Tcorp=37.0
-pnir=1
-k=200.0
-rho=2000.0
-cp=800-0
+L=0.03 #Largo malla
+A=0.03 #Ancho malla
+H=0.03 #Alto malla
+Tcorp=0
+pnir=1500.0
+k=0.19
+rho=1000
+cp=3900
+
+#propiedades opticas
+g=0.9
+ua=2.2
+us=1220
+usp=us*(1-g)
+ueff=np.sqrt(3*ua*(ua+usp))
+D=1/(3*(usp+ua))
 
 
 #parametros de la malla y tiempo
@@ -28,8 +36,8 @@ n=10 #numero nodos
 dz=H/(n-1)
 dx=L/(n-1)
 dy=A/(n-1)
-dt=1e-5
-niter=800
+dt=1e-30
+niter=1000
 
 solution=np.zeros(shape=(n,n,n,niter))
 tiempo=np.linspace(0,niter,niter)
@@ -52,13 +60,13 @@ def D2Tcent(i,j,k,d): ##Segunda derivada centrada
     d2tx=(k-2*j+i)/dx**2
     return d2tx
 
-def D2Tdcenti(i,j,k,d): ##Segunda derivada descentrad izquierda
-    d2tx=(k-2*j+i)/dx
-    return d2tx
+# def D2Tdcenti(i,j,k,d): ##Segunda derivada descentrad izquierda
+#     d2tx=(k-2*j+i)/dx
+#     return d2tx
 
 def laser(x,y,z):
     r=np.sqrt(x**2+y**2+z**2)
-    p=np.exp(-r)
+    p=ua*((pnir*np.exp(-ueff*r))/4*np.pi*D*r)
     return p
 
 for t in range(1,len(solution[0,0,0,:])):
@@ -72,18 +80,19 @@ for t in range(1,len(solution[0,0,0,:])):
                     print(t)
                     
                     # solution[i,j,k,t]=(k*dt*((a+b+c)+laser(i-n/2,j-n/2,k)))+solution[i,j,k,t-1]
-                    solution[i,j,k,t]=(k*dt*((a+b+c)+laser(i-n/2,j-n/2,k-n/2)))+solution[i,j,k,t-1]
+                    solution[i,j,k,t]=((1/(rho*cp))*dt*(k*(a+b+c)+(1/rho*cp)*laser((i-n/2),(j-n/2),k)))+solution[i,j,k,t-1]
                     
 
 
 
-for i in range(0,n):
+for i in range(0,niter,niter//10):
     plt.figure(i)
     X=np.arange(n)
     Y=np.arange(n)
     coordX,coordY = np.meshgrid(X,Y)
-    T=solution[:,:,n//2,i]
-    plt.pcolormesh(coordX,coordY,T,cmap="plasma", shading=("gouraud"))
+    T=solution[:,n//2,:,i]
+    T[:]=T[::-1,::-1]
+    plt.pcolormesh(coordY,coordX,T,cmap="plasma", shading=("gouraud"))
     plt.colorbar()
 
 plt.figure(n+1)
