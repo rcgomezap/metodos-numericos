@@ -20,7 +20,7 @@ Tw=20.0
 Tini=100.0
 
 #parametros de la malla y tiempo
-n=20 #numero nodos
+n=6 #numero nodos
 dx=L/(n-1)
 dt=1.0
 

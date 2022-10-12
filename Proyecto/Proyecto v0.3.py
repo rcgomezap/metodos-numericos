@@ -9,9 +9,10 @@ import sympy as sy
 import matplotlib.pyplot as plt
 import numpy as np
 
-N=20
-Nnano=1e8
-R=1
+N=10
+Nt=50
+Nnano=8e13
+R=0.1
 k=1
 P=1
 U=1
@@ -35,14 +36,14 @@ def T1(x,y,z,t):
 rx=np.linspace(-R,R,N)
 ry=rx
 rz=rx
-tiempo=np.linspace(1,3000,N)
-dim=(N,N,N)
+tiempo=np.linspace(1e-5,1,Nt)
+dim=(N,N,Nt)
 Z=np.zeros(dim)
 
-for i3 in range(0,N):
+for i3 in range(0,Nt):
     for i2 in range (0,N):
         for i1 in range (0,N):
-                    Z[i1,i2,i3]=T1(rx[i1],ry[i2],5e-9,tiempo[i3])
+                    Z[i1,i2,i3]=T1(rx[i1],ry[i2],0.05,tiempo[i3])
                     print(f'{i1} {i2} {i3}')
 
         
@@ -61,9 +62,9 @@ for i in range (0,N):
 
     plt.figure(3)
     X, Y = np.meshgrid(rx, ry)
-    plt.pcolor(X, Y, Z[:,:,i])
+    plt.pcolormesh(X, Y, Z[:,:,i], cmap="plasma", shading=("gouraud"))
     plt.colorbar()
     plt.xlabel('Eje x (m)')
     plt.ylabel('Eje y (m)')
-    # plt.clim([0, 14])
+    plt.clim([0, 14])
     plt.show()
