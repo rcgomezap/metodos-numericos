@@ -13,12 +13,12 @@ import matplotlib.pyplot as plt
 
 
 #condiciones iniciales
-L=0.03 #Largo malla
-A=0.03 #Ancho malla
-H=0.03 #Alto malla
+L=10e-1 #Largo malla
+A=10e-1 #Ancho malla
+H=10e-1 #Alto malla
 Tcorp=0
 pnir=1500.0
-k=0.19
+K=0.19
 rho=1000
 cp=3900
 
@@ -36,7 +36,7 @@ n=10 #numero nodos
 dz=H/(n-1)
 dx=L/(n-1)
 dy=A/(n-1)
-dt=1e-30
+dt=1e-5
 niter=1000
 
 solution=np.zeros(shape=(n,n,n,niter))
@@ -79,8 +79,8 @@ for t in range(1,len(solution[0,0,0,:])):
                     c=D2Tcent(solution[i,j,k-1,t-1],solution[i,j,k,t-1],solution[i,j,k+1,t-1],dz)
                     print(t)
                     
-                    # solution[i,j,k,t]=(k*dt*((a+b+c)+laser(i-n/2,j-n/2,k)))+solution[i,j,k,t-1]
-                    solution[i,j,k,t]=((1/(rho*cp))*dt*(k*(a+b+c)+(1/rho*cp)*laser((i-n/2),(j-n/2),k)))+solution[i,j,k,t-1]
+                    solution[i,j,k,t]=dt*(K*(a+b+c))/(rho*cp)+laser((dx*(i-n/2)),dy*(j-n/2),dz*k)+solution[i,j,k,t-1]
+                    # solution[i,j,k,t]=((1/(rho*cp))*dt*(K*(a+b+c)+(1/rho*cp)*laser((i-n/2),(j-n/2),k)))+solution[i,j,k,t-1]
                     
 
 
