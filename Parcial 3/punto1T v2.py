@@ -2,7 +2,7 @@
 """
 Created on Sun Oct 16 22:59:35 2022
 
-@author: rober
+@author: Roberto Gomez
 """
 
 import numpy as np
@@ -12,16 +12,16 @@ import matplotlib.pyplot as plt
 # import mpl_toolkits.mplot3d.axes3d
 
 #parametros fisicos
-k=0.19
+k=1e-3
 q=1
-c=-1.0 # condicion de neumann
+c=10.0 # condicion de neumann
 
 #parametros geometricos
 H=1
 W=1
-dx=W/4
-dy=H/4
-Ta=30
+dx=W/7
+dy=H/14
+Ta=35
 Tb=30
 
 
