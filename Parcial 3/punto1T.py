@@ -7,22 +7,22 @@ Created on Fri Oct 14 18:49:03 2022
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
-from matplotlib.ticker import LinearLocator,FormatStrFormatter
-import mpl_toolkits.mplot3d.axes3d
+# from matplotlib import cm
+# from matplotlib.ticker import LinearLocator,FormatStrFormatter
+# import mpl_toolkits.mplot3d.axes3d
 
 #parametros fisicos
-k=0.49
-q=1
-c=10.0 # condicion de neumann
+k=0.19
+q=10.0
+c=-10.0 # condicion de neumann
 
 #parametros geometricos
 H=1
 W=1
 dx=W/4
 dy=H/4
-Ta=37
-Tb=36
+Ta=5
+Tb=3
 
 
 n=10 #incognitas
@@ -51,8 +51,8 @@ for i in F2:
     B[i]=(Ta+Tb)/2
 
 for i in F3:
-    A[i,i-3]=1/dy
-    A[i,i]=-1/dy
+    A[i,i-3]=-1/dy
+    A[i,i]=1/dy
     B[i]=c
 
 for i in F4:
@@ -89,10 +89,10 @@ T1[:]=T[::-1,:]
 plt.pcolormesh(coordX,coordY,T1,cmap="plasma", shading=("gouraud"))
 plt.colorbar()
 
-plt.figure(2)
-CS=plt.contour(coordX,coordY,T1,cmap="plasma", shading=("gouraud"))
+# plt.figure(2)
+# CS=plt.contour(coordX,coordY,T1,cmap="plasma", shading=("gouraud"))
 
-plt.figure(3)
-fig=plt.figure()
-ax=fig.gca(projection="3d")
-surf=ax.plot_surface(coordX,coordY,T1,cmap="plasma")
+# plt.figure(3)
+# fig=plt.figure()
+# ax=fig.gca(projection="3d")
+# surf=ax.plot_surface(coordX,coordY,T1,cmap="plasma")
