@@ -19,8 +19,8 @@ c=10.0 # condicion de neumann
 #parametros geometricos
 H=1
 W=1
-dx=W/7
-dy=H/14
+dx=W/6
+dy=H/13
 Ta=35
 Tb=30
 
