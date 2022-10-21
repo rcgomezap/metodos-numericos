@@ -36,8 +36,8 @@ n=8 #numero nodos
 dz=H/(n-1)
 dx=L/(n-1)
 dy=A/(n-1)
-dt=300
-niter=1000
+dt=1
+niter=100
 
 solution=np.zeros(shape=(n,n,n,niter))
 tiempo=np.linspace(0,niter,niter)
@@ -80,7 +80,7 @@ for t in range(1,len(solution[0,0,0,:])):
                     print(t)
                     
                     solution[i,j,k,t]=dt*(K*(a+b+c))/(rho*cp)+laser(dx*i-L/2,dy*j-A/2,dz*k)+solution[i,j,k,t-1]
-                    # solution[i,j,k,t]=((1/(rho*cp))*dt*(K*(a+b+c)+(1/rho*cp)*laser((i-n/2),(j-n/2),k)))+solution[i,j,k,t-1]
+                    # solution[i,j,k,t]=dt*(K*(a+b+c))/(rho*cp)+solution[i,j,k,t-1]
                     
 
 
@@ -95,7 +95,7 @@ for i in range(0,niter,niter//10):
     plt.pcolormesh(coordY,coordX,T,cmap="plasma", shading=("gouraud"))
     plt.colorbar()
 
-plt.figure(n+1)
+plt.figure(niter+1)
 plt.plot(nodo,solution[:,n//3,n//5,niter-1])
-plt.figure(n+2)
+plt.figure(niter+2)
 plt.plot(tiempo,solution[n//3,n//3,n//5,:])
