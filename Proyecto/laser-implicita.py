@@ -79,13 +79,6 @@ for t in range(1,niter):
         for j in range(0,n):
             for i in range(0,n):
                 
-                    # if k==0 or i==0 or j==0:
-                    #     A[pos(i,j,k),pos(i,j,k)]=1
-                    #     B[pos(i,j,k)]=Tcorp
-                    # if k==n-1 or j==n-1 or i==n-1:
-                    #     A[pos(i,j,k),pos(i,j,k)]=1
-                    #     B[pos(i,j,k)]=Tcorp
-                    #     # print('debug')
                     if i==0:
                         A[pos(i,j,k),pos(i,j,k)]=-1/dx
                         A[pos(i,j,k),pos(i+1,j,k)]=1/dx
@@ -140,16 +133,13 @@ for t in range(1,niter):
     L=np.tril(A,k=-1)
     U=np.triu(A,k=1)
     error = 1.0
+    
     while error>=tolerancia:
-        cj=np.matmul(-np.linalg.inv(L+D),(U))
-        
-        dj=np.matmul(np.linalg.inv(D+L),B)
-        
-        x2=np.matmul(cj,x1)+dj
-        
-        error=np.linalg.norm(x2-x1,2)  #este sera el error que tenemos con la euclidea
-        iter+=1
-        
+        cj=np.matmul(-np.linalg.inv(L+D),(U))        
+        dj=np.matmul(np.linalg.inv(D+L),B)        
+        x2=np.matmul(cj,x1)+dj        
+        error=np.linalg.norm(x2-x1,2)
+        iter+=1        
         x1=x2
         
     for z in range(n**3):
