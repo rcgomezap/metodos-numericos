@@ -29,14 +29,14 @@ tolerancia=1e-10
 
 
 #condiciones iniciales
-largo=5e-1 #Largo malla
-ancho=5e-1 #Ancho malla
-alto=5e-1 #Alto malla
+largo=2e-1 #Largo malla
+ancho=2e-1 #Ancho malla
+alto=2e-1 #Alto malla
 Tcorp=0
 pnir=1.5
 K=0.19
 rho=1000
-cp=3900
+cp=3800
 
 #propiedades opticas
 g=0.9
@@ -48,12 +48,12 @@ Doptic=1/(3*(usp+ua))
 
 
 #parametros de la malla y tiempo
-n=8 #numero nodos
+n=9 #numero nodos
 dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
-dt=2000
-niter=500
+dt=10
+niter=10
 
 solution=np.zeros(shape=(n,n,n,niter))
 tiempo=np.linspace(0,dt*niter,niter)
@@ -79,15 +79,43 @@ for t in range(1,niter):
         for j in range(0,n):
             for i in range(0,n):
                 
-                    if k==0 or i==0 or j==0:
-                        A[pos(i,j,k),pos(i,j,k)]=1
-                        B[pos(i,j,k)]=Tcorp
-                    if k==n-1 or j==n-1 or i==n-1:
-                        A[pos(i,j,k),pos(i,j,k)]=1
-                        B[pos(i,j,k)]=Tcorp
-                        # print('debug')
+                    # if k==0 or i==0 or j==0:
+                    #     A[pos(i,j,k),pos(i,j,k)]=1
+                    #     B[pos(i,j,k)]=Tcorp
+                    # if k==n-1 or j==n-1 or i==n-1:
+                    #     A[pos(i,j,k),pos(i,j,k)]=1
+                    #     B[pos(i,j,k)]=Tcorp
+                    #     # print('debug')
+                    if i==0:
+                        A[pos(i,j,k),pos(i,j,k)]=-1/dx
+                        A[pos(i,j,k),pos(i+1,j,k)]=1/dx
+                        B[pos(i,j,k)]=0
                     
-                    if (0<i<n-1) and (0<j<n-1) and (0<k<n-1):
+                    elif i==n-1:
+                        A[pos(i,j,k),pos(i,j,k)]=1/dx
+                        A[pos(i,j,k),pos(i-1,j,k)]=-1/dx
+                        B[pos(i,j,k)]=0
+                    elif j==0:
+                        A[pos(i,j,k),pos(i,j,k)]=-1/dx
+                        A[pos(i,j,k),pos(i,j+1,k)]=1/dx
+                        B[pos(i,j,k)]=0
+                    
+                    elif j==n-1:
+                        A[pos(i,j,k),pos(i,j,k)]=1/dx
+                        A[pos(i,j,k),pos(i,j-1,k)]=-1/dx
+                        B[pos(i,j,k)]=0
+                    elif k==0:
+                        A[pos(i,j,k),pos(i,j,k)]=-1/dx
+                        A[pos(i,j,k),pos(i,j,k+1)]=1/dx
+                        B[pos(i,j,k)]=0
+                    
+                    elif k==n-1:
+                        A[pos(i,j,k),pos(i,j,k)]=1/dx
+                        A[pos(i,j,k),pos(i,j,k-1)]=-1/dx
+                        B[pos(i,j,k)]=0
+                        
+                    
+                    elif (0<i<n-1) and (0<j<n-1) and (0<k<n-1):
                         
                         A[pos(i,j,k),pos(i+1,j,k)]=K/dx**2
                         A[pos(i,j,k),pos(i-1,j,k)]=K/dx**2
