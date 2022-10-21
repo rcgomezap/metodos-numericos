@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 def laser(x,y,z):
     r=np.sqrt(x**2+y**2+z**2)
-    p=ua*((pnir*np.exp(-ueff*r))/4*np.pi*Doptic*r)
+    p=ua*(pnir*np.exp(-ueff*r))/(4*np.pi*Doptic*r)
     return p
 
 def pos(i,j,k):
@@ -29,11 +29,11 @@ tolerancia=1e-10
 
 
 #condiciones iniciales
-largo=2e-1 #Largo malla
-ancho=2e-1 #Ancho malla
-alto=2e-1 #Alto malla
+largo=3e-2 #Largo malla
+ancho=3e-2 #Ancho malla
+alto=3e-2#Alto malla
 Tcorp=0
-pnir=1.5
+pnir=1
 K=0.19
 rho=1000
 cp=3800
@@ -41,8 +41,8 @@ cp=3800
 #propiedades opticas
 g=0.9
 ua=2.2
-us=1220
-usp=us*(1-g)
+# us=1220
+usp=1220
 ueff=np.sqrt(3*ua*(ua+usp))
 Doptic=1/(3*(usp+ua))
 
@@ -53,7 +53,7 @@ dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
 dt=10
-niter=10
+niter=18
 
 solution=np.zeros(shape=(n,n,n,niter))
 tiempo=np.linspace(0,dt*niter,niter)
@@ -66,6 +66,7 @@ x2=np.zeros(n**3)
 
 # nodes=np.zeros(shape=dz)
 solution[:,:,:,0]=Tcorp
+# solution[1:4,1:4,1:4,0]=Tcorp+20
 Tp=np.zeros((n,n,n))
 Tp=np.copy(solution[:,:,:,0])
 Tf=np.zeros((n,n,n))
@@ -128,7 +129,7 @@ for t in range(1,niter):
     
     # x2=np.linalg.solve(A,B)
         
-    #GAUSS SEDIEL
+    # GAUSS SEDIEL
     D=np.diag(np.diag(A))
     L=np.tril(A,k=-1)
     U=np.triu(A,k=1)
