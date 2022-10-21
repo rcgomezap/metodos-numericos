@@ -36,8 +36,8 @@ n=8 #numero nodos
 dz=H/(n-1)
 dx=L/(n-1)
 dy=A/(n-1)
-dt=1
-niter=100
+dt=2000
+niter=500
 
 solution=np.zeros(shape=(n,n,n,niter))
 tiempo=np.linspace(0,niter,niter)

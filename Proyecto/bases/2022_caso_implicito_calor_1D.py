@@ -23,7 +23,7 @@ Tini=100. #temperatura inicial de los nodos internos
 
 
 #parametros de la malla
-n=6
+n=5
 dx=L/(n-1)
 dt=1.
 niter=500
