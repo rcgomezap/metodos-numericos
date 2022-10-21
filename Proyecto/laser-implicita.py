@@ -33,7 +33,7 @@ largo=3e-2 #Largo malla
 ancho=3e-2 #Ancho malla
 alto=3e-2#Alto malla
 Tcorp=0
-pnir=1
+pnir=1.5
 K=0.19
 rho=1000
 cp=3800
@@ -53,7 +53,7 @@ dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
 dt=10
-niter=18
+niter=36
 
 solution=np.zeros(shape=(n,n,n,niter))
 tiempo=np.linspace(0,dt*niter,niter)
