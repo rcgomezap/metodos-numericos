@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def laser(x,y,z):
-    r=np.sqrt(x**2+y**2+z**2)
+    r=np.sqrt(x**2+y**2+(z+dermis)**2)
     p=ua*(pnir*np.exp(-ueff*r))/(4*np.pi*Doptic*r)
     return p
 
@@ -32,15 +32,21 @@ tolerancia=1e-10
 largo=3e-2 #Largo malla
 ancho=3e-2 #Ancho malla
 alto=3e-2#Alto malla
+
 Tcorp=0
+Tambiente=-10
+h=10 #coeficiente convectivo
+
 pnir=1.5
+
 K=0.19
 rho=1000
 cp=3800
+dermis=0
 
 #propiedades opticas
 g=0.9
-ua=3.45
+ua=0.8+2.65
 # us=1220
 usp=1220
 ueff=np.sqrt(3*ua*(ua+usp))
@@ -48,12 +54,12 @@ Doptic=1/(3*(usp+ua))
 
 
 #parametros de la malla y tiempo
-n=9 #numero nodos
+n=6#numero nodos
 dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
 dt=10
-niter=36
+niter=100
 
 solution=np.zeros(shape=(n,n,n,niter))
 tiempo=np.linspace(0,dt*niter,niter)
