@@ -40,7 +40,7 @@ cp=3800
 
 #propiedades opticas
 g=0.9
-ua=0.8
+ua=3.45
 # us=1220
 usp=1220
 ueff=np.sqrt(3*ua*(ua+usp))
