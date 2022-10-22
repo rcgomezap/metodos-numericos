@@ -31,10 +31,10 @@ tolerancia=1e-10
 #condiciones iniciales
 largo=3e-2 #Largo malla
 ancho=3e-2 #Ancho malla
-alto=3e-2#Alto malla
+alto=2e-2#Alto malla
 
 Tcorp=0
-Tambiente=-10
+Tambiente=-5
 h=10 #coeficiente convectivo
 
 pnir=1.5
@@ -42,7 +42,7 @@ pnir=1.5
 K=0.19
 rho=1000
 cp=3800
-dermis=0
+dermis=1e-4
 
 #propiedades opticas
 g=0.9
@@ -54,12 +54,12 @@ Doptic=1/(3*(usp+ua))
 
 
 #parametros de la malla y tiempo
-n=6#numero nodos
+n=7#numero nodos
 dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
-dt=10
-niter=100
+dt=5
+niter=90
 
 solution=np.zeros(shape=(n,n,n,niter))
 tiempo=np.linspace(0,dt*niter,niter)
@@ -96,22 +96,22 @@ for t in range(1,niter):
                         A[pos(i,j,k),pos(i-1,j,k)]=-1/dx
                         B[pos(i,j,k)]=0
                     elif j==0:
-                        A[pos(i,j,k),pos(i,j,k)]=-1/dx
-                        A[pos(i,j,k),pos(i,j+1,k)]=1/dx
+                        A[pos(i,j,k),pos(i,j,k)]=-1/dy
+                        A[pos(i,j,k),pos(i,j+1,k)]=1/dy
                         B[pos(i,j,k)]=0
                     
                     elif j==n-1:
-                        A[pos(i,j,k),pos(i,j,k)]=1/dx
-                        A[pos(i,j,k),pos(i,j-1,k)]=-1/dx
+                        A[pos(i,j,k),pos(i,j,k)]=1/dy
+                        A[pos(i,j,k),pos(i,j-1,k)]=-1/dy
                         B[pos(i,j,k)]=0
                     elif k==0:
-                        A[pos(i,j,k),pos(i,j,k)]=-1/dx
-                        A[pos(i,j,k),pos(i,j,k+1)]=1/dx
-                        B[pos(i,j,k)]=0
+                        A[pos(i,j,k),pos(i,j,k)]=K/dz-h
+                        A[pos(i,j,k),pos(i,j,k+1)]=-K/dz
+                        B[pos(i,j,k)]=h*Tambiente
                     
                     elif k==n-1:
-                        A[pos(i,j,k),pos(i,j,k)]=1/dx
-                        A[pos(i,j,k),pos(i,j,k-1)]=-1/dx
+                        A[pos(i,j,k),pos(i,j,k)]=1/dz
+                        A[pos(i,j,k),pos(i,j,k-1)]=-1/dz
                         B[pos(i,j,k)]=0
                         
                     
