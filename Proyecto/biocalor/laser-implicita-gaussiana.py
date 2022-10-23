@@ -46,7 +46,8 @@ K=0.5 #conductividad
 rho=1052 #densidad
 cp=3800 #calor especifico
 dermis=1e-4 #distancia inicial desde el laser
-Qb=17000 #calor metabolico
+Qb=40000
+# Qb=8341.4045 #calor metabolico #OBTENIDO EMPIRICAMENTE - Estable a 20 minutos 
 
 #parametros de sangre
 rhob=1052
@@ -68,8 +69,8 @@ n=5#numero nodos
 dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
-dt=1
-niter=360
+dt=12
+niter=120
 
 
 ## M A I N  ##
@@ -113,10 +114,15 @@ for t in range(1,niter):
                         A[pos(i,j,k),pos(i,j-1,k)]=-1/dy
                         B[pos(i,j,k)]=0
                     elif k==0:
-                        A[pos(i,j,k),pos(i,j,k)]=K/dz
-                        A[pos(i,j,k),pos(i,j,k+1)]=-K/dz
-                        B[pos(i,j,k)]=-h*(Tcorp-Tambiente)
-                    
+                        A[pos(i,j,k),pos(i,j,k)]=-1/dz-h
+                        A[pos(i,j,k),pos(i,j,k+1)]=1/dz
+                        B[pos(i,j,k)]=h*(-Tambiente)
+                        
+                    # elif k==0:
+                    #     A[pos(i,j,k),pos(i,j,k)]=-1/dz-h
+                    #     A[pos(i,j,k),pos(i,j,k+1)]=1/dz
+                    #     B[pos(i,j,k)]=h*(-Tambiente)
+                                        
                     elif k==n-1:
                         A[pos(i,j,k),pos(i,j,k)]=1/dz
                         A[pos(i,j,k),pos(i,j,k-1)]=-1/dz
@@ -134,10 +140,11 @@ for t in range(1,niter):
                         A[pos(i,j,k),pos(i,j,k+1)]=K/dz**2
                         A[pos(i,j,k),pos(i,j,k-1)]=K/dz**2
                         
-                        A[pos(i,j,k),pos(i,j,k)]=-2*K/dx**2-2*K/dy**2-2*K/dz**2-rho*cp/dt+rhob*cpb*wb
+                        A[pos(i,j,k),pos(i,j,k)]=-2*K/dx**2-2*K/dy**2-2*K/dz**2-rho*cp/dt-rhob*cpb*wb
+                        # A[pos(i,j,k),pos(i,j,k)]=-2*K/dx**2-2*K/dy**2-2*K/dz**2-rho*cp/dt
                         
-                        B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-Qb+rhob*cpb*wb*Tcorp-laser(dx*i-largo/2,dy*j-ancho/2,dz*k)
-                        # B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-40000
+                        B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-Qb-rhob*cpb*wb*Tcorp-laser(dx*i-largo/2,dy*j-ancho/2,dz*k)
+                        # B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-Qb
                         # print(B[pos(i,j,k)])
                     
     
