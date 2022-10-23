@@ -46,8 +46,7 @@ K=0.5 #conductividad
 rho=1052 #densidad
 cp=3800 #calor especifico
 dermis=1e-3 #distancia inicial desde el laser
-Qb=40000
-# Qb=8341.4045 #calor metabolico #OBTENIDO EMPIRICAMENTE - Estable a 20 minutos 
+Qb=40000 #calor metabolico
 
 #parametros de sangre
 rhob=1052
@@ -69,12 +68,12 @@ Doptic=1/(3*(usp+ua)) #densidad optica
 
 
 #parametros de la malla y tiempo
-n=7#numero nodos
+n=5#numero nodos
 dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
-dt=3
-niter=300
+dt=1000
+niter=30
 
 
 ## M A I N  ##
@@ -91,8 +90,10 @@ Bnano=np.zeros(n**3)
 
 x1=np.ones(n**3)
 x2=np.zeros(n**3)
+
 x1nano=np.ones(n**3)
 x2nano=np.zeros(n**3)
+
 tolerancia=1e-10
 
 
@@ -162,9 +163,8 @@ for t in range(1,niter):
                         
                         B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-Qb-rhob*cpb*wb*Tcorp-laser(dx*i-largo/2,dy*j-ancho/2,dz*k,ua)
                         Bnano[pos(i,j,k)]=-rho*cp/dt*Tpnano[i,j,k]-Qb-rhob*cpb*wb*Tcorp-laser(dx*i-largo/2,dy*j-ancho/2,dz*k,uat)
-                        # B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-Qb
-                        # print(B[pos(i,j,k)])
-                    
+                        # B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-Qb-rhob*cpb*wb*Tcorp
+                        # Bnano[pos(i,j,k)]=-rho*cp/dt*Tpnano[i,j,k]-Qb-rhob*cpb*wb*Tcorp
         
     # GAUSS SEDIEL 1
     D=np.diag(np.diag(A))
@@ -182,12 +182,13 @@ for t in range(1,niter):
         x1=x2
     
     # GAUSS SEDIEL 2
-    error = 1.0
     iter2=0
+    error = 1.0
+    
     while error>=tolerancia:
         cj=np.matmul(-np.linalg.inv(L+D),(U))        
         dj=np.matmul(np.linalg.inv(D+L),Bnano)        
-        x2nano=np.matmul(cj,x1nano)+dj        
+        x2nano=np.matmul(cj,x1nano)+dj     
         error=np.linalg.norm(x2nano-x1nano,2)
         iter2+=1        
         x1nano=x2nano
