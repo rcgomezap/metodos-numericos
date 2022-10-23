@@ -10,11 +10,6 @@ Created on Tue Oct 11 16:15:12 2022
 import numpy as np
 import matplotlib.pyplot as plt
 
-def laser(x,y,z,ua):
-    r=np.sqrt(x**2+y**2+(z+dermis)**2)
-    p=ua*(pnir*np.exp(-ueff*r))/(4*np.pi*Doptic*r)
-    return p
-
 def pos(i,j,k):
     pos=i+n*j+n**2*k
     return pos
@@ -25,9 +20,18 @@ def pos1(N):
     i=N%n**2%n
     return i,j,k
 
+def laser(x,y,z,ua):
+    r=np.sqrt(x**2+y**2+(z+dermis)**2)
+    p=ua*(pnir*np.exp(-ueff*r))/(4*np.pi*Doptic*r)
+    return p
 
-
-
+def arrhenius(T,t):
+    omega = Ar*np.exp(-Ea/(R*T))*t
+    return omega
+    
+    
+    
+    
 #dimensiones de la malla
 largo=10e-3 #Largo malla
 ancho=10e-3 #Ancho malla
@@ -39,15 +43,17 @@ Tambiente=24
 h=10 #coeficiente convectivo
 
 #potencia del laser
-pnir=0.5
-
+pnir=1 #W
 #parametros del tumor
 K=0.5 #conductividad
 rho=1052 #densidad
 cp=3800 #calor especifico
 dermis=1e-3 #distancia inicial desde el laser
 Qb=40000 #calor metabolico
-
+#para arrhenius
+Ar=5.94e91 #energia de activación
+Ea=0.5867e6 #factor de frecuencia
+R=8.314 #constante de gas
 #parametros de sangre
 rhob=1052
 cpb=3800
@@ -72,15 +78,15 @@ n=5#numero nodos
 dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
-dt=1000
-niter=30
+dt=5
+niter=120
 
 
 ## M A I N  ##
 solution=np.zeros(shape=(n,n,n,niter))
 solution_nano=np.copy(solution)
 tiempo=np.linspace(0,dt*niter/60,niter) #minutos
-nodo=np.linspace(0,n,n)
+nodoz=np.linspace(0,n*dz*1e3,n)
 
 #para gauss sediel
 A=np.zeros((n**3,n**3))
@@ -206,6 +212,18 @@ for t in range(1,niter):
     Tp=Tf
     Tpnano=Tfnano
     
+#ARRHENIUS
+omega=np.zeros(shape=(n,n,n,niter))
+omega_nano=np.copy(omega)
+
+for t in range(1,niter):
+    for k in range(0,n):
+        for j in range(0,n):
+            for i in range(0,n):
+                omega[i,j,k,t]=omega[i,j,k,t-1]+arrhenius(solution[i,j,k,t]+273.15,dt)
+                omega_nano[i,j,k,t]=omega_nano[i,j,k,t-1]+arrhenius(solution_nano[i,j,k,t]+273.15,dt)
+
+
 
 #plots
 X=np.linspace(0,largo*1e3,n)
@@ -220,7 +238,7 @@ plt.colorbar()
 # plt.clim(max(x1))
 plt.xlabel('mm')
 plt.ylabel('mm')
-plt.title('Laser')
+plt.title(f'Laser - t= {dt*niter/60} min')
 
 plt.figure(2)
 T=solution_nano[:,n//2,:,niter-1]
@@ -230,12 +248,45 @@ plt.colorbar()
 # plt.clim(max(x2)) 
 plt.xlabel('mm')
 plt.ylabel('mm')
-plt.title('Laser + nanoparticulas')
+plt.title(f'Laser - t= {dt*niter/60} min')
+
+plt.figure(3) #Se define una figura
+T=omega[:,n//2,:,niter-1]
+T[:]=T[::-1,::-1]
+plt.title('Muerte celular - Laser')
+CS=plt.contour(coordY,coordX,T,cmap='plasma')
+plt.clabel(CS,inline=1,fontsize=10)
+CS.cmap.set_over('red')
+CS.cmap.set_under('blue')
+plt.clim(0,1)
+plt.colorbar()
+plt.show()
+
+plt.figure(4) #Se define una figura
+T=omega_nano[:,n//2,:,niter-1]
+T[:]=T[::-1,::-1]
+plt.title('Muerte celular - Laser + nanoparticulas')
+CS=plt.contour(coordY,coordX,T,cmap='plasma')
+plt.clabel(CS,inline=1,fontsize=10)
+CS.cmap.set_over('red')
+CS.cmap.set_under('blue')
+plt.clim(0,1)
+plt.colorbar()
+plt.show()
 
 
-plt.figure(3)
-plt.plot(nodo,solution[:,n//3,n//5,niter-1])
-plt.plot(nodo,solution_nano[:,n//3,n//5,niter-1])
-plt.figure(4)
-plt.plot(tiempo,solution[3,3,3,:])
-plt.plot(tiempo,solution_nano[3,3,3,:])
+plt.figure(5)
+plt.plot(nodoz,solution[n//3,n//3,:,niter-1], label="Laser")
+plt.plot(nodoz,solution_nano[n//3,n//3,:,niter-1], label="Laser + Nanoparticulas")
+plt.xlabel('mm')
+plt.ylabel('Temperatura (Celsius)')
+plt.legend(loc='best') 
+
+
+plt.figure(6)
+plt.plot(tiempo,solution[3,3,3,:], label="Laser")
+plt.plot(tiempo,solution_nano[3,3,3,:], label="Laser + Nanoparticulas")
+plt.ylabel('Temperatura (Celsius)')
+plt.xlabel('Tiempo (min)')
+plt.title('Calentamiento en un nodo')
+plt.legend(loc='best') 
