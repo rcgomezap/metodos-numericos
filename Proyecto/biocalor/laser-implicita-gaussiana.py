@@ -38,8 +38,8 @@ Tcorp=37
 Tambiente=24
 h=10 #coeficiente convectivo
 
-#parametros de laser
-pnir=0
+#potencia del laser
+pnir=0.5
 
 #parametros del tumor
 K=0.5 #conductividad
@@ -69,13 +69,13 @@ n=5#numero nodos
 dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
-dt=12
-niter=120
+dt=5
+niter=300
 
 
 ## M A I N  ##
 solution=np.zeros(shape=(n,n,n,niter))
-tiempo=np.linspace(0,dt*niter,niter)
+tiempo=np.linspace(0,dt*niter/60,niter) #minutos
 nodo=np.linspace(0,n,n)
 
 #para gauss sediel
@@ -113,15 +113,16 @@ for t in range(1,niter):
                         A[pos(i,j,k),pos(i,j,k)]=1/dy
                         A[pos(i,j,k),pos(i,j-1,k)]=-1/dy
                         B[pos(i,j,k)]=0
+                        
                     elif k==0:
                         A[pos(i,j,k),pos(i,j,k)]=-1/dz-h
                         A[pos(i,j,k),pos(i,j,k+1)]=1/dz
                         B[pos(i,j,k)]=h*(-Tambiente)
                         
                     # elif k==0:
-                    #     A[pos(i,j,k),pos(i,j,k)]=-1/dz-h
+                    #     A[pos(i,j,k),pos(i,j,k)]=-1/dz
                     #     A[pos(i,j,k),pos(i,j,k+1)]=1/dz
-                    #     B[pos(i,j,k)]=h*(-Tambiente)
+                    #     B[pos(i,j,k)]=-K*h*(Tcorp-Tambiente)
                                         
                     elif k==n-1:
                         A[pos(i,j,k),pos(i,j,k)]=1/dz
