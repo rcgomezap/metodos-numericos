@@ -25,8 +25,8 @@ def laser(x,y,z,ua):
     p=ua*(pnir*np.exp(-ueff*r))/(4*np.pi*Doptic*r)
     return p
 
-def arrhenius(T,t):
-    omega = Ar*np.exp(-Ea/(R*T))*t
+def arrhenius(T,te):
+    omega = Ar*np.exp(-Ea/(R*T))*te
     return omega
     
     
@@ -172,7 +172,7 @@ for t in range(1,niter):
                         # B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-Qb-rhob*cpb*wb*Tcorp
                         # Bnano[pos(i,j,k)]=-rho*cp/dt*Tpnano[i,j,k]-Qb-rhob*cpb*wb*Tcorp
         
-    # GAUSS SEDIEL 1
+    # GAUSS SEIDEL 1
     D=np.diag(np.diag(A))
     L=np.tril(A,k=-1)
     U=np.triu(A,k=1)
@@ -206,7 +206,7 @@ for t in range(1,niter):
         solution_nano[pos1(z)[0],pos1(z)[1],pos1(z)[2],t]=x2nano[z]
         Tfnano[pos1(z)[0],pos1(z)[1],pos1(z)[2]]=x2nano[z]
     
-    print(f'{round(t*100/niter,2)}% - Gauss Sediel: {iter1} iteraciones.')
+    print(f'{round(t*100/niter,2)}% - Gauss Seidel: {iter1} iteraciones.')
 
     # solution[:,:,:,j+1]=Tf
     Tp=Tf
@@ -231,7 +231,7 @@ Y=np.linspace(-ancho*1e3/2,ancho*1e3/2,n)
 coordX,coordY = np.meshgrid(X,Y)
 
 plt.figure(1)
-T=solution[:,n//2,:,niter-1]
+T=np.copy(solution[:,n//2+1,:,niter-1])
 T[:]=T[::-1,::-1]
 plt.pcolormesh(coordY,coordX,T,cmap="plasma", shading=("gouraud"))
 plt.colorbar()
@@ -241,19 +241,19 @@ plt.ylabel('mm')
 plt.title(f'Laser - t= {dt*niter/60} min')
 
 plt.figure(2)
-T=solution_nano[:,n//2,:,niter-1]
+T[:]=np.copy(solution_nano[:,n//2+1,:,niter-1])
 T[:]=T[::-1,::-1]
 plt.pcolormesh(coordY,coordX,T,cmap="plasma", shading=("gouraud"))
 plt.colorbar()
 # plt.clim(max(x2)) 
 plt.xlabel('mm')
 plt.ylabel('mm')
-plt.title(f'Laser - t= {dt*niter/60} min')
+plt.title(f'Laser + NPs - t= {dt*niter/60} min')
 
 plt.figure(3) #Se define una figura
-T=omega[:,n//2,:,niter-1]
+T=np.copy(omega[:,n//2,:,niter-1])
 T[:]=T[::-1,::-1]
-plt.title('Muerte celular - Laser')
+plt.title(f'Muerte celular: Laser t= {dt*niter/60} min')
 CS=plt.contour(coordY,coordX,T,cmap='plasma')
 plt.clabel(CS,inline=1,fontsize=10)
 CS.cmap.set_over('red')
@@ -263,9 +263,9 @@ plt.colorbar()
 plt.show()
 
 plt.figure(4) #Se define una figura
-T=omega_nano[:,n//2,:,niter-1]
+T=np.copy(omega_nano[:,n//2,:,niter-1])
 T[:]=T[::-1,::-1]
-plt.title('Muerte celular - Laser + nanoparticulas')
+plt.title(f'Muerte celular: Laser + NPs t = {dt*niter/60} min')
 CS=plt.contour(coordY,coordX,T,cmap='plasma')
 plt.clabel(CS,inline=1,fontsize=10)
 CS.cmap.set_over('red')
@@ -277,7 +277,7 @@ plt.show()
 
 plt.figure(5)
 plt.plot(nodoz,solution[n//3,n//3,:,niter-1], label="Laser")
-plt.plot(nodoz,solution_nano[n//3,n//3,:,niter-1], label="Laser + Nanoparticulas")
+plt.plot(nodoz,solution_nano[n//3,n//3,:,niter-1], label=f"Laser + NPs - t = {dt*niter/60} min")
 plt.xlabel('mm')
 plt.ylabel('Temperatura (Celsius)')
 plt.legend(loc='best') 
