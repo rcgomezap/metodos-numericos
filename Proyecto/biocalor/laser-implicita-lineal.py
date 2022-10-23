@@ -5,7 +5,7 @@ Created on Tue Oct 11 16:15:12 2022
 @author: rober
 """
 
-#caso explicito
+#caso implicito
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,61 +25,70 @@ def pos1(N):
     i=N%n**2%n
     return i,j,k
 
-tolerancia=1e-10
 
 
-#condiciones iniciales
-largo=3e-2 #Largo malla
-ancho=3e-2 #Ancho malla
-alto=2e-2#Alto malla
 
-Tcorp=0
-Tambiente=-5
+#dimensiones de la malla
+largo=10e-3 #Largo malla
+ancho=10e-3 #Ancho malla
+alto=10e-3#Alto malla
+
+#datos condiciones de frontera e iniciales
+Tcorp=37
+Tambiente=24
 h=10 #coeficiente convectivo
 
-pnir=1.5
+#parametros de laser
+pnir=0
 
-K=0.19
-rho=1000
-cp=3800
-dermis=1e-4
+#parametros del tumor
+K=0.5 #conductividad
+rho=1052 #densidad
+cp=3800 #calor especifico
+dermis=1e-4 #distancia inicial desde el laser
+Qb=40000 #calor metabolico
 
-#propiedades opticas
-g=0.9
-ua=0.8+2.65
-# us=1220
-usp=1220
+#parametros de sangre
+rhob=1052
+cpb=3800
+wb=0.01 #perfusion de sangre
+ #calor por perfusion sanguinea
+
+#propiedades opticas del tumor
+g=0.9 #factor anisotropico
+ua=80 #indice de absorcion
+us=8000 #indice de dispersion
+usp=us*(1-g) #indice de dispersion reducido
 ueff=np.sqrt(3*ua*(ua+usp))
-Doptic=1/(3*(usp+ua))
+Doptic=1/(3*(usp+ua)) #densidad optica
 
 
 #parametros de la malla y tiempo
-n=7#numero nodos
+n=5#numero nodos
 dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
-dt=5
-niter=90
+dt=3
+niter=100
 
+
+## M A I N  ##
 solution=np.zeros(shape=(n,n,n,niter))
 tiempo=np.linspace(0,dt*niter,niter)
 nodo=np.linspace(0,n,n)
+
+#para gauss sediel
 A=np.zeros((n**3,n**3))
 B=np.zeros(n**3)
 x1=np.ones(n**3)
 x2=np.zeros(n**3)
+tolerancia=1e-10
+iter=0
 
 
-# nodes=np.zeros(shape=dz)
 solution[:,:,:,0]=Tcorp
-# solution[1:4,1:4,1:4,0]=Tcorp+20
-Tp=np.zeros((n,n,n))
 Tp=np.copy(solution[:,:,:,0])
 Tf=np.zeros((n,n,n))
-
-
-
-iter=0
 
 for t in range(1,niter):
     for k in range(0,n):
@@ -105,9 +114,9 @@ for t in range(1,niter):
                         A[pos(i,j,k),pos(i,j-1,k)]=-1/dy
                         B[pos(i,j,k)]=0
                     elif k==0:
-                        A[pos(i,j,k),pos(i,j,k)]=K/dz-h
+                        A[pos(i,j,k),pos(i,j,k)]=K/dz
                         A[pos(i,j,k),pos(i,j,k+1)]=-K/dz
-                        B[pos(i,j,k)]=h*Tambiente
+                        B[pos(i,j,k)]=-h*(Tcorp-Tambiente)
                     
                     elif k==n-1:
                         A[pos(i,j,k),pos(i,j,k)]=1/dz
@@ -126,10 +135,10 @@ for t in range(1,niter):
                         A[pos(i,j,k),pos(i,j,k+1)]=K/dz**2
                         A[pos(i,j,k),pos(i,j,k-1)]=K/dz**2
                         
-                        A[pos(i,j,k),pos(i,j,k)]=-2*K/dx**2-2*K/dy**2-2*K/dz**2-rho*cp/dt
+                        A[pos(i,j,k),pos(i,j,k)]=-2*K/dx**2-2*K/dy**2-2*K/dz**2-rho*cp/dt+rhob*cpb*wb
                         
-                        B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-laser(dx*i-largo/2,dy*j-ancho/2,dz*k)
-                        # B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]
+                        B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-Qb+rhob*cpb*wb*Tcorp-laser(dx*i-largo/2,dy*j-ancho/2,dz*k)
+                        # B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-40000
                         # print(B[pos(i,j,k)])
                     
     
@@ -141,6 +150,7 @@ for t in range(1,niter):
     U=np.triu(A,k=1)
     error = 1.0
     
+    iter=0
     while error>=tolerancia:
         cj=np.matmul(-np.linalg.inv(L+D),(U))        
         dj=np.matmul(np.linalg.inv(D+L),B)        
@@ -152,14 +162,11 @@ for t in range(1,niter):
     for z in range(n**3):
         solution[pos1(z)[0],pos1(z)[1],pos1(z)[2],t]=x2[z]
         Tf[pos1(z)[0],pos1(z)[1],pos1(z)[2]]=x2[z]
-    print(f'{t*100/niter}%')
+    print(f'{t*100/niter}% - Gauss Sediel: {iter} iteraciones.')
 
     # solution[:,:,:,j+1]=Tf
     Tp=Tf
     
-
-
-
 
 for z in range(0,niter,niter//10):
     plt.figure(z)
@@ -175,4 +182,4 @@ for z in range(0,niter,niter//10):
 plt.figure(niter)
 plt.plot(nodo,solution[:,n//3,n//5,niter-1])
 plt.figure(niter+1)
-plt.plot(tiempo,solution[n//3,n//3,n//5,:])
+plt.plot(tiempo,solution[3,3,3,:])
