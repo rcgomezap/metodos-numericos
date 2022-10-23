@@ -10,7 +10,7 @@ Created on Tue Oct 11 16:15:12 2022
 import numpy as np
 import matplotlib.pyplot as plt
 
-def laser(x,y,z):
+def laser(x,y,z,ua):
     r=np.sqrt(x**2+y**2+(z+dermis)**2)
     p=ua*(pnir*np.exp(-ueff*r))/(4*np.pi*Doptic*r)
     return p
@@ -38,15 +38,16 @@ Tcorp=37
 Tambiente=24
 h=10 #coeficiente convectivo
 
-#parametros de laser
-pnir=0
+#potencia del laser
+pnir=0.5
 
 #parametros del tumor
 K=0.5 #conductividad
 rho=1052 #densidad
 cp=3800 #calor especifico
-dermis=1e-4 #distancia inicial desde el laser
-Qb=40000 #calor metabolico
+dermis=1e-3 #distancia inicial desde el laser
+Qb=40000
+# Qb=8341.4045 #calor metabolico #OBTENIDO EMPIRICAMENTE - Estable a 20 minutos 
 
 #parametros de sangre
 rhob=1052
@@ -57,38 +58,53 @@ wb=0.01 #perfusion de sangre
 #propiedades opticas del tumor
 g=0.9 #factor anisotropico
 ua=80 #indice de absorcion
-us=8000 #indice de dispersion
+us=10000 #indice de dispersion
 usp=us*(1-g) #indice de dispersion reducido
+uanano=100 #indice de absorcion de nanoparticulas
+uspnano=0.1 #indice de dispersion de nanoparticulas
+uat=ua+uanano #indice de absorcion total
+uspt=usp+uspnano #indice de dispersion total
 ueff=np.sqrt(3*ua*(ua+usp))
 Doptic=1/(3*(usp+ua)) #densidad optica
 
 
 #parametros de la malla y tiempo
-n=5#numero nodos
+n=7#numero nodos
 dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
 dt=3
-niter=100
+niter=300
 
 
 ## M A I N  ##
 solution=np.zeros(shape=(n,n,n,niter))
-tiempo=np.linspace(0,dt*niter,niter)
+solution_nano=np.copy(solution)
+tiempo=np.linspace(0,dt*niter/60,niter) #minutos
 nodo=np.linspace(0,n,n)
 
 #para gauss sediel
 A=np.zeros((n**3,n**3))
+
 B=np.zeros(n**3)
+Bnano=np.zeros(n**3)
+
 x1=np.ones(n**3)
 x2=np.zeros(n**3)
+x1nano=np.ones(n**3)
+x2nano=np.zeros(n**3)
 tolerancia=1e-10
-iter=0
 
 
 solution[:,:,:,0]=Tcorp
+solution_nano[:,:,:,0]=Tcorp
+
 Tp=np.copy(solution[:,:,:,0])
 Tf=np.zeros((n,n,n))
+
+Tpnano=np.copy(Tp)
+Tfnano=np.zeros((n,n,n))
+
 
 for t in range(1,niter):
     for k in range(0,n):
@@ -113,11 +129,17 @@ for t in range(1,niter):
                         A[pos(i,j,k),pos(i,j,k)]=1/dy
                         A[pos(i,j,k),pos(i,j-1,k)]=-1/dy
                         B[pos(i,j,k)]=0
+                        
                     elif k==0:
-                        A[pos(i,j,k),pos(i,j,k)]=K/dz
-                        A[pos(i,j,k),pos(i,j,k+1)]=-K/dz
-                        B[pos(i,j,k)]=-h*(Tcorp-Tambiente)
-                    
+                        A[pos(i,j,k),pos(i,j,k)]=-1/dz-h
+                        A[pos(i,j,k),pos(i,j,k+1)]=1/dz
+                        B[pos(i,j,k)]=h*(-Tambiente)
+                        
+                    # elif k==0:
+                    #     A[pos(i,j,k),pos(i,j,k)]=-1/dz
+                    #     A[pos(i,j,k),pos(i,j,k+1)]=1/dz
+                    #     B[pos(i,j,k)]=-K*h*(Tcorp-Tambiente)
+                                        
                     elif k==n-1:
                         A[pos(i,j,k),pos(i,j,k)]=1/dz
                         A[pos(i,j,k),pos(i,j,k-1)]=-1/dz
@@ -135,51 +157,84 @@ for t in range(1,niter):
                         A[pos(i,j,k),pos(i,j,k+1)]=K/dz**2
                         A[pos(i,j,k),pos(i,j,k-1)]=K/dz**2
                         
-                        A[pos(i,j,k),pos(i,j,k)]=-2*K/dx**2-2*K/dy**2-2*K/dz**2-rho*cp/dt+rhob*cpb*wb
+                        A[pos(i,j,k),pos(i,j,k)]=-2*K/dx**2-2*K/dy**2-2*K/dz**2-rho*cp/dt-rhob*cpb*wb
+                        # A[pos(i,j,k),pos(i,j,k)]=-2*K/dx**2-2*K/dy**2-2*K/dz**2-rho*cp/dt
                         
-                        B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-Qb+rhob*cpb*wb*Tcorp-laser(dx*i-largo/2,dy*j-ancho/2,dz*k)
-                        # B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-40000
+                        B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-Qb-rhob*cpb*wb*Tcorp-laser(dx*i-largo/2,dy*j-ancho/2,dz*k,ua)
+                        Bnano[pos(i,j,k)]=-rho*cp/dt*Tpnano[i,j,k]-Qb-rhob*cpb*wb*Tcorp-laser(dx*i-largo/2,dy*j-ancho/2,dz*k,uat)
+                        # B[pos(i,j,k)]=-rho*cp/dt*Tp[i,j,k]-Qb
                         # print(B[pos(i,j,k)])
                     
-    
-    # x2=np.linalg.solve(A,B)
         
-    # GAUSS SEDIEL
+    # GAUSS SEDIEL 1
     D=np.diag(np.diag(A))
     L=np.tril(A,k=-1)
     U=np.triu(A,k=1)
     error = 1.0
     
-    iter=0
+    iter1=0
     while error>=tolerancia:
         cj=np.matmul(-np.linalg.inv(L+D),(U))        
         dj=np.matmul(np.linalg.inv(D+L),B)        
         x2=np.matmul(cj,x1)+dj        
         error=np.linalg.norm(x2-x1,2)
-        iter+=1        
+        iter1+=1        
         x1=x2
+    
+    # GAUSS SEDIEL 2
+    error = 1.0
+    iter2=0
+    while error>=tolerancia:
+        cj=np.matmul(-np.linalg.inv(L+D),(U))        
+        dj=np.matmul(np.linalg.inv(D+L),Bnano)        
+        x2nano=np.matmul(cj,x1nano)+dj        
+        error=np.linalg.norm(x2nano-x1nano,2)
+        iter2+=1        
+        x1nano=x2nano
         
     for z in range(n**3):
         solution[pos1(z)[0],pos1(z)[1],pos1(z)[2],t]=x2[z]
         Tf[pos1(z)[0],pos1(z)[1],pos1(z)[2]]=x2[z]
-    print(f'{t*100/niter}% - Gauss Sediel: {iter} iteraciones.')
+        
+        solution_nano[pos1(z)[0],pos1(z)[1],pos1(z)[2],t]=x2nano[z]
+        Tfnano[pos1(z)[0],pos1(z)[1],pos1(z)[2]]=x2nano[z]
+    
+    print(f'{round(t*100/niter,2)}% - Gauss Sediel: {iter1} iteraciones.')
 
     # solution[:,:,:,j+1]=Tf
     Tp=Tf
+    Tpnano=Tfnano
     
 
-for z in range(0,niter,niter//10):
-    plt.figure(z)
-    X=np.arange(n)
-    Y=np.arange(n)
-    coordX,coordY = np.meshgrid(X,Y)
-    T=solution[:,n//2,:,z]
-    T[:]=T[::-1,::-1]
-    plt.pcolormesh(coordY,coordX,T,cmap="plasma", shading=("gouraud"))
-    plt.colorbar()
-    # plt.clim(0,42)
+#plots
+X=np.linspace(0,largo*1e3,n)
+Y=np.linspace(-ancho*1e3/2,ancho*1e3/2,n)
+coordX,coordY = np.meshgrid(X,Y)
 
-plt.figure(niter)
+plt.figure(1)
+T=solution[:,n//2,:,niter-1]
+T[:]=T[::-1,::-1]
+plt.pcolormesh(coordY,coordX,T,cmap="plasma", shading=("gouraud"))
+plt.colorbar()
+# plt.clim(max(x1))
+plt.xlabel('mm')
+plt.ylabel('mm')
+plt.title('Laser')
+
+plt.figure(2)
+T=solution_nano[:,n//2,:,niter-1]
+T[:]=T[::-1,::-1]
+plt.pcolormesh(coordY,coordX,T,cmap="plasma", shading=("gouraud"))
+plt.colorbar()
+# plt.clim(max(x2)) 
+plt.xlabel('mm')
+plt.ylabel('mm')
+plt.title('Laser + nanoparticulas')
+
+
+plt.figure(3)
 plt.plot(nodo,solution[:,n//3,n//5,niter-1])
-plt.figure(niter+1)
+plt.plot(nodo,solution_nano[:,n//3,n//5,niter-1])
+plt.figure(4)
 plt.plot(tiempo,solution[3,3,3,:])
+plt.plot(tiempo,solution_nano[3,3,3,:])
