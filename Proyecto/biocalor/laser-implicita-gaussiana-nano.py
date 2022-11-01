@@ -39,7 +39,7 @@ alto=10e-3#Alto malla
 
 #datos condiciones de frontera e iniciales
 Tcorp=37
-Tambiente=10
+Tambiente=24
 h=10 #coeficiente convectivo
 
 #potencia del laser
