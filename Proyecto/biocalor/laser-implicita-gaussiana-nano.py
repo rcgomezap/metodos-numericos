@@ -2,7 +2,7 @@
 """
 Created on Tue Oct 11 16:15:12 2022
 
-@author: rober
+@author: Roberto Gomez, Julian Gomez, Jesus Martinez, Juan Fernandez
 """
 
 #caso implicito
@@ -39,7 +39,7 @@ alto=10e-3#Alto malla
 
 #datos condiciones de frontera e iniciales
 Tcorp=37
-Tambiente=24
+Tambiente=10
 h=10 #coeficiente convectivo
 
 #potencia del laser
@@ -50,13 +50,13 @@ rho=1052 #densidad
 cp=3800 #calor especifico
 dermis=1e-3 #distancia inicial desde el laser
 Qb=40000 #calor metabolico
-#para arrhenius
+#para Arrhenius
 Ar=5.94e91 #energia de activación
 Ea=0.5867e6 #factor de frecuencia
 R=8.314 #constante de gas
 #parametros de sangre
-rhob=1052
-cpb=3800
+rhob=1052 #densidad sangre
+cpb=3800 #calor especifico sangre
 wb=0.01 #perfusion de sangre
  #calor por perfusion sanguinea
 
@@ -69,17 +69,17 @@ uanano=100 #indice de absorcion de nanoparticulas
 uspnano=0.1 #indice de dispersion de nanoparticulas
 uat=ua+uanano #indice de absorcion total
 uspt=usp+uspnano #indice de dispersion total
-ueff=np.sqrt(3*ua*(ua+usp))
+ueff=np.sqrt(3*ua*(ua+usp)) #difusividad de la luz en el medio
 Doptic=1/(3*(usp+ua)) #densidad optica
 
 
 #parametros de la malla y tiempo
-n=5#numero nodos
+n=5 #numero nodos por dimension
 dz=alto/(n-1)
 dx=largo/(n-1)
 dy=ancho/(n-1)
-dt=5
-niter=120
+dt=2 #segundos
+niter=300
 
 
 ## M A I N  ##
@@ -122,37 +122,44 @@ for t in range(1,niter):
                         A[pos(i,j,k),pos(i,j,k)]=-1/dx
                         A[pos(i,j,k),pos(i+1,j,k)]=1/dx
                         B[pos(i,j,k)]=0
+                        Bnano[pos(i,j,k)]=0
                     
                     elif i==n-1:
                         A[pos(i,j,k),pos(i,j,k)]=1/dx
                         A[pos(i,j,k),pos(i-1,j,k)]=-1/dx
                         B[pos(i,j,k)]=0
+                        Bnano[pos(i,j,k)]=0
+                        
                     elif j==0:
                         A[pos(i,j,k),pos(i,j,k)]=-1/dy
                         A[pos(i,j,k),pos(i,j+1,k)]=1/dy
                         B[pos(i,j,k)]=0
+                        Bnano[pos(i,j,k)]=0
                     
                     elif j==n-1:
                         A[pos(i,j,k),pos(i,j,k)]=1/dy
                         A[pos(i,j,k),pos(i,j-1,k)]=-1/dy
                         B[pos(i,j,k)]=0
+                        Bnano[pos(i,j,k)]=0
                         
                     elif k==0:
                         A[pos(i,j,k),pos(i,j,k)]=-1/dz-h
                         A[pos(i,j,k),pos(i,j,k+1)]=1/dz
                         B[pos(i,j,k)]=h*(-Tambiente)
+                        Bnano[pos(i,j,k)]=h*(-Tambiente) #CONDICION DE FRONTERA PROPUESTA POR EL GRUPO (Robin)
                         
                     # elif k==0:
                     #     A[pos(i,j,k),pos(i,j,k)]=-1/dz
                     #     A[pos(i,j,k),pos(i,j,k+1)]=1/dz
                     #     B[pos(i,j,k)]=-K*h*(Tcorp-Tambiente)
+                    #     Bnano[pos(i,j,k)]=-K*h*(Tcorp-Tambiente)  #CONDICION DE FRONTERA QUE SE PROPONE EN LA LITERATURA (Newman)
                                         
                     elif k==n-1:
                         A[pos(i,j,k),pos(i,j,k)]=1/dz
                         A[pos(i,j,k),pos(i,j,k-1)]=-1/dz
                         B[pos(i,j,k)]=0
-                        
-                    
+                        Bnano[pos(i,j,k)]=0
+                                         
                     elif (0<i<n-1) and (0<j<n-1) and (0<k<n-1):
                         
                         A[pos(i,j,k),pos(i+1,j,k)]=K/dx**2
@@ -224,7 +231,6 @@ for t in range(1,niter):
                 omega_nano[i,j,k,t]=omega_nano[i,j,k,t-1]+arrhenius(solution_nano[i,j,k,t]+273.15,dt)
 
 
-
 #plots
 X=np.linspace(0,largo*1e3,n)
 Y=np.linspace(-ancho*1e3/2,ancho*1e3/2,n)
@@ -276,9 +282,9 @@ plt.show()
 
 
 plt.figure(5)
-plt.plot(nodoz,solution[n//3,n//3,:,niter-1], label="Laser")
+plt.plot(nodoz,solution[n//3,n//3,:,niter-1], label=f"Laser - t = {dt*niter/60} min")
 plt.plot(nodoz,solution_nano[n//3,n//3,:,niter-1], label=f"Laser + NPs - t = {dt*niter/60} min")
-plt.xlabel('mm')
+plt.xlabel('Profundiad (mm)')
 plt.ylabel('Temperatura (Celsius)')
 plt.legend(loc='best') 
 
