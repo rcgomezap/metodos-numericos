@@ -28,9 +28,7 @@ def laser(x,y,z,ua):
 def arrhenius(T,te):
     omega = Ar*np.exp(-Ea/(R*T))*te
     return omega
-    
-    
-    
+        
     
 #dimensiones de la malla
 largo=10e-3 #Largo malla
