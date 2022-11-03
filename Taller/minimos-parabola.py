@@ -10,7 +10,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
-def parabola(a0,a1,a2,x):
+def parabola(x,a0,a1,a2):
     y=a0+a1*x+a2*x**2
     return y
 
@@ -38,13 +38,17 @@ B=np.array([[sumay],[sumaxy],[sumax2y]])
 #Validación 2: curvefit
 popt,pcov=curve_fit(parabola,xdata,ydata)
 a,b,c=popt
-
-
-
+print('Valores de a0, a1 y a2 obtenidos')
+print(f'a0: Minimos cuadrados: {round(a0,5)}')
+print(f'a0: Curvefit: {round(a,5)}')
+print(f'a1: Minimos cuadrados: {round(a1,5)}')
+print(f'a1: Curvefit: {round(b,5)}')
+print(f'a2: Minimos cuadrados: {round(a2,5)}')
+print(f'a2: Curvefit: {round(c,5)}')
 
 plt.figure(1)
 plt.scatter(xdata,ydata,label='Datos experimentales', color='r')
-plt.plot(x,parabola(a0,a1,a2,x),label='Ajuste con minimos cuadrados', color='g')
+plt.plot(x,parabola(x,a0,a1,a2),label='Ajuste con minimos cuadrados', color='g')
 plt.legend()
 plt.xlabel('Distancia (m)')
 plt.ylabel('ALtura (m)')
@@ -53,5 +57,11 @@ plt.grid()
 plt.show()
 
 plt.figure(2)
-plt.plot(x,parabola(a0,a1,a2,x),label='Ajuste con minimos cuadrados', color='g')
-plt.plot(x,parabola(a,b,c,x),label='Ajuste con Curvefit', color='r')
+plt.plot(x,parabola(x,a0,a1,a2),label='Ajuste con minimos cuadrados', color='g')
+plt.plot(x,parabola(x,a,b,c),label='Ajuste con Curvefit', color='r')
+plt.xlabel('Distancia (m)')
+plt.ylabel('ALtura (m)')
+plt.title('Verificación del ajuste con Curvefit')
+plt.legend()
+plt.grid()
+plt.show()
