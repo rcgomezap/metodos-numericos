@@ -46,9 +46,12 @@ print(f'a1: Curvefit: {round(b,5)}')
 print(f'a2: Minimos cuadrados: {round(a2,5)}')
 print(f'a2: Curvefit: {round(c,5)}')
 
+print(f'\n El resultado de la interpolación con x = 3 es y = {parabola(3,a0,a1,a2)}')
+
 plt.figure(1)
 plt.scatter(xdata,ydata,label='Datos experimentales', color='r')
 plt.plot(x,parabola(x,a0,a1,a2),label='Ajuste con minimos cuadrados', color='g')
+plt.scatter(3,parabola(3,a0,a1,a2),label='Dato interpolado, x=3', color='b')
 plt.legend()
 plt.xlabel('Distancia (m)')
 plt.ylabel('ALtura (m)')
