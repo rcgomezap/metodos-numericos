@@ -36,9 +36,9 @@ ancho=10e-3 #Ancho malla
 alto=10e-3#Alto malla
 
 #datos condiciones de frontera e iniciales
-Tcorp=37
-Tambiente=24
-h=10 #coeficiente convectivo
+Tcorp=37 #Celsius
+Tambiente=24 #Celsius
+h=10  #coeficiente convectivo
 
 #potencia del laser
 pnir=0.5 #W
@@ -229,7 +229,8 @@ for t in range(1,niter):
                 omega_nano[i,j,k,t]=omega_nano[i,j,k,t-1]+arrhenius(solution_nano[i,j,k,t]+273.15,dt)
 
 
-#plots
+#PLOTS
+
 X=np.linspace(0,largo*1e3,n)
 Y=np.linspace(-ancho*1e3/2,ancho*1e3/2,n)
 coordX,coordY = np.meshgrid(X,Y)
