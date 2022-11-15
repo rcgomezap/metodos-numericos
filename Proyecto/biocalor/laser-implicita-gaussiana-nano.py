@@ -41,7 +41,7 @@ Tambiente=24
 h=10 #coeficiente convectivo
 
 #potencia del laser
-pnir=1 #W
+pnir=0.5 #W
 #parametros del tumor
 K=0.5 #conductividad
 rho=1052 #densidad
@@ -63,8 +63,8 @@ g=0.9 #factor anisotropico
 ua=80 #indice de absorcion
 us=10000 #indice de dispersion
 usp=us*(1-g) #indice de dispersion reducido
-uanano=100 #indice de absorcion de nanoparticulas
-uspnano=0.1 #indice de dispersion de nanoparticulas
+uanano=265 #indice de absorcion de nanoparticulas
+uspnano=0.16 #indice de dispersion de nanoparticulas
 uat=ua+uanano #indice de absorcion total
 uspt=usp+uspnano #indice de dispersion total
 ueff=np.sqrt(3*ua*(ua+usp)) #difusividad de la luz en el medio
@@ -243,6 +243,7 @@ plt.colorbar()
 plt.xlabel('mm')
 plt.ylabel('mm')
 plt.title(f'Laser - t= {dt*niter/60} min')
+plt.savefig('1.png', dpi=400)
 
 plt.figure(2)
 T[:]=np.copy(solution_nano[:,n//2+1,:,niter-1])
@@ -253,6 +254,7 @@ plt.colorbar()
 plt.xlabel('mm')
 plt.ylabel('mm')
 plt.title(f'Laser + NPs - t= {dt*niter/60} min')
+plt.savefig('2.png', dpi=400)
 
 plt.figure(3) #Se define una figura
 T=np.copy(omega[:,n//2,:,niter-1])
@@ -264,7 +266,7 @@ CS.cmap.set_over('red')
 CS.cmap.set_under('blue')
 plt.clim(0,1)
 plt.colorbar()
-plt.show()
+plt.savefig('3.png', dpi=400)
 
 plt.figure(4) #Se define una figura
 T=np.copy(omega_nano[:,n//2,:,niter-1])
@@ -276,7 +278,7 @@ CS.cmap.set_over('red')
 CS.cmap.set_under('blue')
 plt.clim(0,1)
 plt.colorbar()
-plt.show()
+plt.savefig('4.png', dpi=400)
 
 
 plt.figure(5)
@@ -285,6 +287,7 @@ plt.plot(nodoz,solution_nano[n//3,n//3,:,niter-1], label=f"Laser + NPs - t = {dt
 plt.xlabel('Profundiad (mm)')
 plt.ylabel('Temperatura (Celsius)')
 plt.legend(loc='best') 
+plt.savefig('5.png', dpi=400)
 
 
 plt.figure(6)
@@ -293,4 +296,5 @@ plt.plot(tiempo,solution_nano[3,3,3,:], label="Laser + Nanoparticulas")
 plt.ylabel('Temperatura (Celsius)')
 plt.xlabel('Tiempo (min)')
 plt.title('Calentamiento en un nodo')
-plt.legend(loc='best') 
+plt.legend(loc='best')
+plt.savefig('6.png', dpi=400)
